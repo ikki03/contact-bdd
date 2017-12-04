@@ -1,6 +1,6 @@
 const {Given,Then,When} = require ('cucumber');
 
-Given(/^The contact list is display$/, function (callback) {
+Given(/^The sort contact list is display$/, function (callback) {
     this.browser.visit(" http://127.0.0.1:3000", (err) => {
         if (err) throw err;
         var contact = this.browser.tabs.current.Contact.Contacts;
@@ -17,21 +17,33 @@ Given(/^The contact list is display$/, function (callback) {
         callback();
     });
 });
-When(/^User clicks on remove button of the first contact$/, function (callback) {
+When(/^User clicks on sort button$/, function (callback) {
     this.browser.visit(" http://127.0.0.1:3000", (err) => {
         if (err) throw err;
-        var tab = this.browser.queryAll('table tbody td a');
-        tab[0].click();
+        var tab = this.browser.query('#button_sort');
+        tab.click();
         callback();
     });
 });
-Then(/^The first contact is removed$/, function (callback) {
+Then(/^The list is sort$/, function (callback) {
     this.browser.visit(" http://127.0.0.1:3000", (err) => {
         if (err) throw err;
-        var contact = this.browser.tabs.current.Contact.Contacts.instance().iterator().next();
+        var contact = this.browser.tabs.current.Contact.Contacts.instance();
         var tab = this.browser.queryAll('table tbody td');
-        this.browser.assert.success(contact.firstName()===tab[0].innerHTML);
-        this.browser.assert.success(contact.firstName()==="Jacques");
+        var test = [];
+        var parcour =0;
+        var i = contact.iterator();
+        while (i.hasNext()){
+            var val =i.next();
+            test[parcour] = val.lastName();
+            parcour+=1;
+        }
+        test.sort();
+        var avancement =1;
+        for( var x=0;x<test.length;x++){
+            this.browser.assert.success(test[x]===tab[avancement].innerHTML);
+            avancement+=6;
+        }
         callback();
     });
 });
